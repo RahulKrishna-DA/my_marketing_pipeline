@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: fct_marketing_performance
+    description: "The master marketing velocity mart. Combines ad spend, revenue, ROAS, and conversion speed by channel."
+    columns:
+      - name: utm_source_key
+        description: "The unique surrogate key for the marketing channel."
+        tests:
+          - unique
+          - not_null
+
+      - name: utm_source
+        description: "The human-readable name of the marketing channel (e.g., google, facebook)."
+        tests:
+          - not_null
+
+      - name: roas
+        description: "Return on Ad Spend. Protected against division-by-zero errors."

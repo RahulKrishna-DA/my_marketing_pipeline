@@ -1,0 +1,7 @@
+target/
+.venv/
+dbt_packages/
+logs/
+profiles.yml
+*.db
+*.db.wal

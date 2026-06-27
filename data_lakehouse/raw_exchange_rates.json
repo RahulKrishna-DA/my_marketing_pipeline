@@ -1,0 +1,9 @@
+{
+    "base_currency": "USD",
+    "extracted_at": "Sat, 20 Jun 2026 00:02:31 +0000",
+    "rates": {
+        "USD": 1,
+        "EUR": 0.871922,
+        "GBP": 0.756016
+    }
+}

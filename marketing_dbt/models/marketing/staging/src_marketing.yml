@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: marketing
+    schema: main
+    tables:
+      - name: raw_ad_spend
+      - name: raw_web_clicks
+      - name: raw_transactions
