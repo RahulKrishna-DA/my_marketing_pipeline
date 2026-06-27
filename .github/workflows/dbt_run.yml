@@ -32,4 +32,5 @@ jobs:
       - name: Run and Test dbt Pipeline
         run: |
           cd marketing_dbt
-          dbt build
+          # Pass an environment variable or flag to point to a local test duckdb if needed
+          dbt build --profiles-dir .
