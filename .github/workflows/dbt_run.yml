@@ -30,7 +30,19 @@ jobs:
           dbt deps
 
      - name: Run and Test dbt Pipeline
-  run: |
-    cd marketing_dbt
-    dbt deps --profiles-dir .
-    dbt build --profiles-dir .
+        run: |
+          cd marketing_dbt
+          
+          # 1. Securely generate the profile file in the cloud runner's home directory
+          mkdir -p ~/.dbt
+          echo "
+          my_dbt_project:
+            outputs:
+              dev:
+                type: duckdb
+                path: dev.duckdb
+            target: dev
+          " > ~/.dbt/profiles.yml
+          
+          # 2. Run dbt (it automatically looks inside ~/.dbt by default)
+          dbt build
