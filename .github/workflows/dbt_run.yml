@@ -32,6 +32,10 @@ jobs:
       - name: Run and Test dbt Pipeline
         run: |
           cd marketing_dbt
+          # ... (your existing echo command)
+          
+          # Use this line instead of just 'dbt build'
+          dbt build --profiles-dir ~/.dbt
           
           # 1. Securely generate the profile file in the cloud runner's home directory
           mkdir -p ~/.dbt
