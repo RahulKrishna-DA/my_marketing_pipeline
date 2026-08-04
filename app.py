@@ -16,24 +16,56 @@ def load_data_from_duckdb():
     conn.close()
     return df
 
-df = load_data_from_duckdb()
+# Load the raw data from the database
+raw_df = load_data_from_duckdb()
 
-# Show key metrics at the top
-total_spend = df['spend'].sum()
-total_revenue = df['revenue'].sum()
-avg_roas = df['roas'].mean()
+# ==========================================
+# NEW: INTERACTIVE SIDEBAR FILTERS 🎛️
+# ==========================================
+st.sidebar.header("Filter Analytics View")
+
+# 1. Channel Filter Dropdown
+# Gets unique channels from your utm_source column and adds an "All" option
+channels = ["All"] + list(raw_df['utm_source'].unique())
+selected_channel = st.sidebar.selectbox("Select Marketing Channel", channels)
+
+# 2. Spend Threshold Slider
+# Filters out rows where the ad spend was lower than a certain amount
+max_spend = float(raw_df['spend'].max())
+min_spend = float(raw_df['spend'].min())
+selected_spend_limit = st.sidebar.slider("Minimum Spend Threshold ($)", min_spend, max_spend, min_spend)
+
+# ==========================================
+# NEW: FILTER LOGIC BASED ON USER CLICKS ⚡
+# ==========================================
+# Apply the slider filter first
+filtered_df = raw_df[raw_df['spend'] >= selected_spend_limit]
+
+# Apply the channel dropdown filter next
+if selected_channel != "All":
+    filtered_df = filtered_df[filtered_df['utm_source'] == selected_channel]
+
+
+# ==========================================
+# METRICS & CHARTS (Now using filtered_df!)
+# ==========================================
+# Show key metrics based on user selections
+total_spend = filtered_df['spend'].sum()
+total_revenue = filtered_df['revenue'].sum()
+avg_roas = filtered_df['roas'].mean() if not filtered_df.empty else 0
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Total Spend", f"${total_spend:,.2f}")
 col2.metric("Total Revenue", f"${total_revenue:,.2f}")
+# Fixed a small edge case: round to 2 decimals to match your string conversion
 col3.metric("Average ROAS", f"{avg_roas:.2f}x")
 
 st.divider()
 
-# Display the Clean Mart Data Table
+# Display the filtered Mart Data Table
 st.subheader("📊 Final Mart Data Preview")
-st.dataframe(df, use_container_width=True)
+st.dataframe(filtered_df, use_container_width=True)
 
-# Add a simple chart
+# Add an interactive chart that changes dynamically
 st.subheader("⚡ Spend by Channel")
-st.bar_chart(df, x="utm_source", y="spend")
+st.bar_chart(filtered_df, x="utm_source", y="spend")
