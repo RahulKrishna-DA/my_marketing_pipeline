@@ -2,7 +2,8 @@
 
 A robust, end-to-end data engineering pipeline that automates the ingestion, transformation, and deployment of e-commerce marketing performance data. This project demonstrates modern analytics engineering practices to replace manual, slow spreadsheet lookups (`VLOOKUP`) with an automated data stack.
 
-🌐 **[Click Here to View the Live Dashboard](https://mymarketingpipeline-nxsgxlonsgru8c5krxrtjl.streamlit.app/)
+🌐 **[Click Here to View the Live Dashboard](https://mymarketingpipeline-nxsgxlonsgru8c5krxrtjl.streamlit.app/)**
+
 ---
 
 ## ⚡ Key Business Metrics Automated
@@ -46,3 +47,4 @@ Unlike generic data pipelines, this architecture specifically tracks and models 
 ├── dbt_project.yml       # dbt project configurations
 └── README.md             # Project documentation
 ```
+
