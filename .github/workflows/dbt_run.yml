@@ -2,15 +2,13 @@ name: Run dbt Marketing Pipeline
 
 on:
   schedule:
-    # Runs every day at 6:00 AM UTC (11:30 AM IST)
     - cron: '0 6 * * *'
-  workflow_dispatch: # Allows you to trigger it manually from GitHub anytime
+  workflow_dispatch:
 
 jobs:
   run_dbt:
     runs-on: ubuntu-latest
 
-    # Securely pass your MotherDuck token from GitHub Secrets
     env:
       MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
 
@@ -33,7 +31,7 @@ jobs:
           cd marketing_dbt
           dbt deps
 
-    - name: Run dbt Pipeline on MotherDuck
+      - name: Run dbt Pipeline on MotherDuck
         run: |
           cd marketing_dbt
           dbt build --target prod --profiles-dir=.
