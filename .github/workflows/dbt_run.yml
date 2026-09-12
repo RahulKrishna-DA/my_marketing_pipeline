@@ -33,7 +33,7 @@ jobs:
           cd marketing_dbt
           dbt deps
 
-     - name: Run dbt Pipeline on MotherDuck
+    - name: Run dbt Pipeline on MotherDuck
         run: |
           cd marketing_dbt
           dbt build --target prod --profiles-dir=.
