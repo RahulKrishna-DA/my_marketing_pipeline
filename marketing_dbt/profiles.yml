@@ -1,0 +1,10 @@
+my_dbt_project:
+  outputs:
+    dev:
+      type: duckdb
+      path: dev.duckdb
+    prod:
+      type: duckdb
+      path: "md:my_db?motherduck_token={{ env_var('MOTHERDUCK_TOKEN') }}"
+      threads: 4
+  target: dev
