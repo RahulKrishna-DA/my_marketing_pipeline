@@ -36,5 +36,5 @@ jobs:
       - name: Run dbt Pipeline on MotherDuck
         run: |
           cd marketing_dbt
-          # Uses your existing profiles.yml and runs the 'prod' target in MotherDuck
-          dbt build --target prod
+          # Pass --profiles-dir . so dbt looks inside the marketing_dbt folder for profiles.yml
+          dbt build --target prod --profiles-dir .
