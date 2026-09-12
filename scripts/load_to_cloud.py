@@ -3,15 +3,21 @@ import csv
 import json
 import duckdb
 
-print("🏗️ Initializing Explicit Python Warehouse Load...")
+print("🏗️ Initializing Explicit Python Warehouse Load (MotherDuck Cloud)...")
 
 # Define folder paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LAKEHOUSE_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'data_lakehouse'))
-DB_PATH = os.path.abspath(os.path.join(BASE_DIR, '..', 'marketing_dbt', 'dev.duckdb'))
 
-# 1. Establish a real connection to our DuckDB Warehouse file
-print(f"🔌 Connecting to Data Warehouse at: {DB_PATH}")
+# --- CHANGE: Retrieve token and connect directly to MotherDuck Cloud ---
+token = os.getenv("MOTHERDUCK_TOKEN")
+if not token:
+    raise ValueError("❌ Error: MOTHERDUCK_TOKEN environment variable is not set! Run your PowerShell command to set it first.")
+
+DB_PATH = f"md:my_db?motherduck_token={token}"
+
+# 1. Establish a real connection to our MotherDuck Cloud Warehouse
+print(f"🔌 Connecting to MotherDuck Cloud Database: my_db")
 conn = duckdb.connect(DB_PATH)
 
 # --- PHASE 1: LOAD THE JSON API EXCHANGE RATES ---
@@ -50,7 +56,7 @@ for file_name in csv_files:
     csv_file_path = os.path.join(LAKEHOUSE_DIR, f"{file_name}.csv")
     print(f"📥 Processing flat file: {file_name}.csv")
     
-    # We use DuckDB's explicit read command to cleanly map the CSV directly to a table
+    # We use DuckDB's explicit read command to cleanly map the CSV directly to a table in the cloud
     conn.execute(f"DROP TABLE IF EXISTS {file_name};")
     conn.execute(f"""
         CREATE TABLE {file_name} AS 
@@ -59,4 +65,4 @@ for file_name in csv_files:
 
 # Close the database connection safely
 conn.close()
-print("🏁 Success! All CSV and JSON datasets are explicitly committed to DuckDB.")
+print("🏁 Success! All CSV and JSON datasets are explicitly committed to MotherDuck Cloud.")
