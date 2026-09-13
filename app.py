@@ -14,13 +14,9 @@ if not MOTHERDUCK_TOKEN:
 
 @st.cache_data
 def load_data_from_motherduck():
-    # Connect to MotherDuck and explicitly target the database and token
     connection_string = f"md:my_db?motherduck_token={MOTHERDUCK_TOKEN}"
     conn = duckdb.connect(connection_string, read_only=True)
-    
-    # Query from the 'main' schema where dbt builds your models
     df = conn.execute("SELECT * FROM main.fct_marketing_performance").fetchdf()
-    
     conn.close()
     return df
 
@@ -46,6 +42,10 @@ st.divider()
 st.subheader("📊 Final Mart Data Preview")
 st.dataframe(df, use_container_width=True)
 
-# Add a simple chart
+# Add a simple chart with fallback check for column names
 st.subheader("⚡ Spend by Channel")
-st.bar_chart(df, x="utm_source", y="spend")
+if "utm_source" in df.columns:
+    st.bar_chart(df, x="utm_source", y="spend")
+else:
+    # Fallback to the first available column if utm_source differs
+    st.bar_chart(df, x=df.columns[0], y="spend")
