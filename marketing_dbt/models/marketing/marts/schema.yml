@@ -8,17 +8,21 @@ models:
         description: "The unique surrogate key for the marketing channel."
         tests:
           - not_null
-          # Removed standalone 'unique' test from here
 
       - name: utm_source
         description: "The human-readable name of the marketing channel (e.g., google, facebook)."
         tests:
           - not_null
 
+      - name: ad_date
+        tests:
+          - not_null
+
       - name: roas
         description: "Return on Ad Spend. Protected against division-by-zero errors."
 
-    # Add this table-level composite test:
     tests:
-      - unique:
-          combination_of: [ad_date, utm_source_key]
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ad_date
+            - utm_source_key
