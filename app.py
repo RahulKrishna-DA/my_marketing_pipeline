@@ -28,7 +28,7 @@ except Exception as e:
 
 # Show key metrics at the top
 total_spend = df['spend'].sum()
-total_revenue = df['total_revenue'].sum()
+total_revenue = df['revenue'].sum()
 avg_roas = df['roas'].mean()
 
 col1, col2, col3 = st.columns(3)
