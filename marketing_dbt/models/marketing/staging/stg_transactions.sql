@@ -1,6 +1,7 @@
 SELECT
     transaction_id AS order_id,
-    visitor_id AS user_id,  -- Map raw visitor_id to user_id
-    purchase_timestamp AS purchased_at,
-    order_amount AS amount_usd
+    visitor_id AS user_id,
+    timestamp AS purchased_at,
+    amount AS amount_usd,
+    currency
 FROM {{ source('marketing', 'raw_transactions') }}
