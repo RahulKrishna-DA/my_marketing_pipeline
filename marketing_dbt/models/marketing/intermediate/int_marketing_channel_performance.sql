@@ -26,8 +26,8 @@ SELECT
     s.spend_usd,
     s.impressions,
     s.clicks,
-    r.total_revenue,
-    r.total_orders
+    COALESCE(r.total_revenue, 0.0) AS total_revenue,
+    COALESCE(r.total_orders, 0) AS total_orders
 FROM ad_spend s
 FULL OUTER JOIN web_revenue r
     ON s.utm_source_key = r.utm_source_key
