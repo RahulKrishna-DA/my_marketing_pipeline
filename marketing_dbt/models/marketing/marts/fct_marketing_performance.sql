@@ -5,6 +5,6 @@ SELECT
     spend_usd AS spend,  -- Map spend_usd here so the mart matches your column expectations
     impressions,
     clicks,
-    total_revenue,
-    total_orders
+    COALESCE(total_revenue, 0.0) AS total_revenue,
+    COALESCE(total_orders, 0) AS total_orders
 FROM {{ ref('int_marketing_channel_performance') }}
