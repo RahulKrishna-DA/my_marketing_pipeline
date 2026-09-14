@@ -26,10 +26,15 @@ except Exception as e:
     st.error(f"🚨 **Database Connection Error:** {e}")
     st.stop()
 
-# Show key metrics at the top
-total_spend = df['spend'].sum()
-total_revenue = df['revenue'].sum()
-avg_roas = df['roas'].mean()
+# Map common column name variations safely (including 'total_revenue')
+spend_col = next((col for col in ['spend', 'total_spend', 'daily_spend'] if col in df.columns), df.columns[1])
+revenue_col = next((col for col in ['total_revenue', 'revenue', 'amount'] if col in df.columns), None)
+roas_col = next((col for col in ['roas', 'return_on_ad_spend'] if col in df.columns), None)
+
+# Show key metrics at the top with safe fallbacks
+total_spend = df[spend_col].sum() if spend_col else 0.0
+total_revenue = df[revenue_col].sum() if revenue_col else 0.0
+avg_roas = df[roas_col].mean() if roas_col else 0.0
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Total Spend", f"${total_spend:,.2f}")
@@ -44,8 +49,8 @@ st.dataframe(df, use_container_width=True)
 
 # Add a simple chart with fallback check for column names
 st.subheader("⚡ Spend by Channel")
-if "utm_source" in df.columns:
-    st.bar_chart(df, x="utm_source", y="spend")
+channel_col = next((col for col in ['utm_source', 'channel', 'source'] if col in df.columns), df.columns[0])
+if spend_col in df.columns:
+    st.bar_chart(df, x=channel_col, y=spend_col)
 else:
-    # Fallback to the first available column if utm_source differs
-    st.bar_chart(df, x=df.columns[0], y="spend")
+    st.bar_chart(df)
