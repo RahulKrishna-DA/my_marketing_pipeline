@@ -1,13 +1,33 @@
 import os
 import csv
+import json
 import random
 from datetime import datetime, timedelta
+from email.utils import parsedate_to_datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'data_lakehouse'))
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-START_DATE = datetime.utcnow() - timedelta(days=30)
+# 1. Synchronize date with the API extraction timestamp if available
+exchange_rate_path = os.path.join(OUTPUT_DIR, 'raw_exchange_rates.json')
+anchor_date = datetime.utcnow()
+
+if os.path.exists(exchange_rate_path):
+    try:
+        with open(exchange_rate_path, 'r', encoding='utf-8') as f:
+            er_data = json.load(f)
+            extracted_str = er_data.get("extracted_at")
+            if extracted_str:
+                # Safely parse strings like 'Mon, 14 Sep 2026...' into a clean datetime object
+                parsed_dt = parsedate_to_datetime(extracted_str)
+                anchor_date = parsed_dt.replace(tzinfo=None)
+                print(f"🔗 Synchronized Faker window using API anchor date: {anchor_date.strftime('%Y-%m-%d')}")
+    except Exception as e:
+        print(f"⚠️ Could not parse exchange rate timestamp, defaulting to UTC: {e}")
+
+END_DATE = anchor_date
+START_DATE = END_DATE - timedelta(days=30)
 CHANNELS = ['google_ads', 'facebook_ads', 'linkedin_ads', 'email_marketing']
 
 print("🌱 Generating synchronized mock marketing data...")
@@ -56,4 +76,4 @@ with open(os.path.join(OUTPUT_DIR, 'raw_transactions.csv'), 'w', newline='', enc
             random.choice(['USD', 'EUR', 'GBP'])
         ])
 
-print("✅ Data generation complete and aligned!")
+print("✅ Data generation complete and aligned with API timestamps!")
