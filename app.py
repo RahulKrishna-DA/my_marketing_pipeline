@@ -5,11 +5,16 @@ import os
 st.title("🚀 Marketing Performance & Velocity Dashboard")
 st.markdown("An end-to-end analytics engineering pipeline built with Python, dbt, and MotherDuck.")
 
-# Safely check if the secret token exists
-MOTHERDUCK_TOKEN = st.secrets.get("MOTHERDUCK_TOKEN", os.getenv("MOTHERDUCK_TOKEN"))
+# Safely check environment variable first (for local runs), then fallback to Streamlit Cloud secrets
+MOTHERDUCK_TOKEN = os.getenv("MOTHERDUCK_TOKEN")
+if not MOTHERDUCK_TOKEN:
+    try:
+        MOTHERDUCK_TOKEN = st.secrets.get("MOTHERDUCK_TOKEN")
+    except Exception:
+        pass
 
 if not MOTHERDUCK_TOKEN:
-    st.error("🚨 **Missing MotherDuck Token!** Please go to your Streamlit Cloud app settings -> **Secrets**, and add: `MOTHERDUCK_TOKEN = 'your_token_here'`")
+    st.error("🚨 **Missing MotherDuck Token!** Please set your environment variable locally or configure Streamlit Cloud secrets.")
     st.stop()
 
 @st.cache_data
@@ -29,12 +34,11 @@ except Exception as e:
 # Map common column name variations safely (including 'total_revenue')
 spend_col = next((col for col in ['spend', 'total_spend', 'daily_spend'] if col in df.columns), df.columns[1])
 revenue_col = next((col for col in ['total_revenue', 'revenue', 'amount'] if col in df.columns), None)
-roas_col = next((col for col in ['roas', 'return_on_ad_spend'] if col in df.columns), None)
 
-# Show key metrics at the top with safe fallbacks
-total_spend = df[spend_col].sum() if spend_col else 0.0
-total_revenue = df[revenue_col].sum() if revenue_col else 0.0
-avg_roas = df[roas_col].mean() if roas_col else 0.0
+# Show key metrics at the top with safe fallbacks and dynamic ROAS calculation
+total_spend = float(df[spend_col].sum()) if spend_col else 0.0
+total_revenue = float(df[revenue_col].sum()) if revenue_col else 0.0
+avg_roas = (total_revenue / total_spend) if total_spend > 0 else 0.0
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Total Spend", f"${total_spend:,.2f}")
