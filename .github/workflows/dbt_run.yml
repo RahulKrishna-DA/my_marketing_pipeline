@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install dbt-core "dbt-duckdb==1.6.*" pandas faker requests
+          pip install dbt-core "dbt-duckdb==1.6.*" "duckdb==1.5.5" pandas faker requests
 
       - name: Generate Fresh Mock Data
         run: |
